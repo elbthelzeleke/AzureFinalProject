@@ -1,38 +1,21 @@
-import pyodbc
-from flask import Flask, render_template, request, redirect, url_for 
+from flask import Flask, render_template, request, redirect, url_for
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 app = Flask(__name__, template_folder='frontend')
 
+# Set up the SQLAlchemy engine and session
 def get_db_connection():
     try:
-        conn = pyodbc.connect(f'DRIVER={{ODBC Driver 17 for SQL Server}};'
-                              f'SERVER={DB_SERVER};'
-                              f'PORT=1433;'
-                              f'DATABASE={DB_DATABASE};'
-                              f'UID={DB_USER};'
-                              f'PWD={DB_PASSWORD};')
+        # SQLAlchemy engine creation using the credentials from environment variables
+        engine = create_engine(f'mssql+pyodbc://{DB_USER}:{DB_PASSWORD}@{DB_SERVER}:{1433}/{DB_DATABASE}?driver=ODBC+Driver+17+for+SQL+Server')
+        Session = sessionmaker(bind=engine)
+        session = Session()
         print("Connection to database successful!")
-        return conn
+        return session
     except Exception as e:
         print(f"Failed to connect to database: {e}")
         raise Exception(f"Database connection error: {e}")
-
-# Set up your Azure SQL Database connection
-""" def get_db_connection():
-    try:
-        # Attempt to establish a connection to the database
-        conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};'
-                              'SERVER=krogerretail-server.database.windows.net;'
-                              'PORT=1433;'
-                              'DATABASE=krogerretail-db;'
-                              'UID=DB_USER;'
-                              'PWD=DB_PASSWORD')
-        print("Connection to database successful!")
-        return conn
-    except Exception as e:
-        # If the connection fails, print an error message
-        print(f"Failed to connect to database: {e}")
-        return None """
 
 # Define the route for the home page
 @app.route('/')
@@ -57,8 +40,7 @@ def login():
 @app.route('/dashboard/<username>')
 def dashboard(username):
     # Connect to the database and fetch the data for HSHD_NUM #10
-    conn = get_db_connection()
-    cursor = conn.cursor()
+    session = get_db_connection()
 
     query = '''
     SELECT
@@ -75,17 +57,15 @@ def dashboard(username):
     JOIN
         Products p ON t.Product_num = p.Product_num
     WHERE
-        h.Hshd_num = ?
+        h.Hshd_num = :hshd_num
     ORDER BY
         h.Hshd_num, t.Basket_num, t.Year, t.Product_num, p.Department, p.Commodity;
     '''
 
+    result = session.execute(query, {'hshd_num': 10})  # Pull data for HSHD_NUM 10
+    data = result.fetchall()
 
-    cursor.execute(query, 10)  # Pull data for HSHD_NUM 10
-    data = cursor.fetchall()
-
-    cursor.close()
-    conn.close()
+    session.close()
 
     # Send the welcome message along with the data to the template
     welcome_message = f"Welcome, {username}!"
