@@ -15,7 +15,7 @@ def get_db_connection():
         return conn
     except Exception as e:
         print(f"Failed to connect to database: {e}")
-        return None
+        raise Exception(f"Database connection error: {e}")
 
 # Set up your Azure SQL Database connection
 """ def get_db_connection():
