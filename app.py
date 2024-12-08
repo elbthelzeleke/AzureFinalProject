@@ -1,10 +1,15 @@
 import pyodbc
+import os
 from flask import Flask, render_template, request, redirect, url_for 
 
 app = Flask(__name__, template_folder='frontend')
 
 def get_db_connection():
     try:
+        DB_USER = os.environ['DB_USER']
+        DB_PASSWORD = os.environ['DB_PASSWORD']
+        DB_SERVER = os.environ['DB_SERVER']
+        DB_DATABASE = os.environ['DB_DATABASE']
         conn = pyodbc.connect(f'DRIVER={{ODBC Driver 17 for SQL Server}};'
                               f'SERVER={DB_SERVER};'
                               f'PORT=1433;'
@@ -18,21 +23,7 @@ def get_db_connection():
         raise Exception(f"Database connection error: {e}")
 
 # Set up your Azure SQL Database connection
-""" def get_db_connection():
-    try:
-        # Attempt to establish a connection to the database
-        conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};'
-                              'SERVER=krogerretail-server.database.windows.net;'
-                              'PORT=1433;'
-                              'DATABASE=krogerretail-db;'
-                              'UID=DB_USER;'
-                              'PWD=DB_PASSWORD;')
-        print("Connection to database successful!")
-        return conn
-    except Exception as e:
-        # If the connection fails, print an error message
-        print(f"Failed to connect to database: {e}")
-        return None """
+
 
 # Define the route for the home page
 @app.route('/')
