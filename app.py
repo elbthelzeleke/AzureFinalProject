@@ -10,7 +10,7 @@ def get_db_connection():
                               f'PORT=1433;'
                               f'DATABASE={DB_DATABASE};'
                               f'UID={DB_USER};'
-                              f'PWD={DB_PASSWORD}')
+                              f'PWD={DB_PASSWORD};')
         print("Connection to database successful!")
         return conn
     except Exception as e:
