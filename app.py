@@ -80,7 +80,7 @@ def dashboard(username):
     # Send the welcome message along with the data to the template
     welcome_message = f"Welcome, {username}!"
 
-    return render_template('dashboard.html', welcome_message=welcome_message, data=data)
+    return render_template('dashboard.html', welcome_message=welcome_message, data=data, hshd_num=hshd_num)
 
 # Define the search route
 @app.route('/search_dashboard', methods=['GET', 'POST'])
@@ -118,7 +118,7 @@ def search_dashboard():
     cursor.close()
     conn.close()
 
-    return render_template('dashboard.html', welcome_message="Search Results", data=data)
+    return render_template('dashboard.html', welcome_message="Search Results", data=data, hshd_num=hshd_num)
 
 if __name__ == "__main__":
     app.run(debug=True)
