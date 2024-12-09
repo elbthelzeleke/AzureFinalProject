@@ -150,8 +150,15 @@ def basket_analysis():
     cursor.close()
     conn.close()
 
+     # Ensure the data is structured as expected for DataFrame
+    if data:  # Check if the data is not empty
+        df = pd.DataFrame(data, columns=['Basket_num', 'Product_num', 'Department'])
+    else:
+        # Handle the case where no data is returned
+        df = pd.DataFrame(columns=['Basket_num', 'Product_num', 'Department'])
+
     # Process the data for product combinations in the same basket
-    df = pd.DataFrame(data, columns=['Basket_num', 'Product_num', 'Department'])
+    #df = pd.DataFrame(data, columns=['Basket_num', 'Product_num', 'Department'])
     basket_combinations = df.groupby('Basket_num')['Product_num'].apply(lambda x: list(x)).reset_index()
 
     # Create a new DataFrame to track product combinations
