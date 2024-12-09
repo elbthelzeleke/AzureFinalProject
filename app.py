@@ -127,7 +127,7 @@ def search_dashboard():
 
 @app.route('/basket_analysis', methods=['GET'])
 def basket_analysis():
-    department = request.args.get('department', default="Food", type=str)
+    department = request.args.get('department', default="FOOD", type=str)
 
     # Connect to the database and fetch the data based on selected department
     conn = get_db_connection()
