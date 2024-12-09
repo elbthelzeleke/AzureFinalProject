@@ -27,12 +27,14 @@
 
     <h1>{{ welcome_message }}</h1>
 
-    <!-- Search Form -->
+     <!-- Search Form -->
     <form action="{{ url_for('search_dashboard') }}" method="GET">
         <label for="hshd_num">Enter Household Number (HSHD_NUM):</label>
-        <input type="number" id="hshd_num" name="hshd_num" required>
+        <input type="number" id="hshd_num" name="hshd_num" value="{{ hshd_num }}" required>
         <input type="submit" value="Search">
     </form>
+
+    <h2>{{ search_message }}</h2>
 
     <!-- Data Table -->
     {% if data %}

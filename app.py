@@ -23,25 +23,12 @@ def get_db_connection():
         raise Exception(f"Database connection error: {e}")
 
 # Define the route for the home page
+# Define the route for the home page
 @app.route('/')
 def home():
     return render_template('index.html')
 
-# Define the route for login
-@app.route('/login', methods=['POST'])
-def login():
-    # Get form data
-    username = request.form.get('username')
-    password = request.form.get('password')
-    email = request.form.get('email')
-    
-    # Here you can add logic to validate or process the form data
-    print(f"Username: {username}, Password: {password}, Email: {email}")
-    
-    # Redirect to dashboard with user info (this can be more dynamic with session management)
-    return redirect(url_for('dashboard', username=username))
-
-# Define the route to display the dashboard with data pull for HSHD_NUM #10
+# Define the route to display the dashboard with data pull for HSHD_NUM
 @app.route('/dashboard/<username>', methods=['GET', 'POST'])
 def dashboard(username):
     # Get HSHD_NUM from the query string (default to 10 if not provided)
@@ -71,7 +58,7 @@ def dashboard(username):
         h.Hshd_num, t.Basket_num, t.Year, t.Product_num, p.Department, p.Commodity;
     '''
 
-    cursor.execute(query, hshd_num)  # Use dynamic HSHD_NUM from query string
+    cursor.execute(query, hshd_num)  # Fetch data for dynamic HSHD_NUM
     data = cursor.fetchall()
 
     cursor.close()
@@ -79,8 +66,9 @@ def dashboard(username):
 
     # Send the welcome message along with the data to the template
     welcome_message = f"Welcome, {username}!"
+    search_message = "Search Results" if hshd_num else ""
 
-    return render_template('dashboard.html', welcome_message=welcome_message, data=data)
+    return render_template('dashboard.html', welcome_message=welcome_message, data=data, hshd_num=hshd_num, search_message=search_message)
 
 # Define the search route
 @app.route('/search_dashboard', methods=['GET', 'POST'])
@@ -118,7 +106,9 @@ def search_dashboard():
     cursor.close()
     conn.close()
 
-    return render_template('dashboard.html', welcome_message="Search Results", data=data)
+    search_message = "Search Results" if hshd_num else "No results for empty search."
+
+    return render_template('dashboard.html', welcome_message="Search Results", data=data, hshd_num=hshd_num, search_message=search_message)
 
 if __name__ == "__main__":
     app.run(debug=True)
